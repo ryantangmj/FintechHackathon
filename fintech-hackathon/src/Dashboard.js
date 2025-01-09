@@ -3,15 +3,7 @@
 
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  FaCheckCircle,
-  FaExclamationTriangle,
-  FaTimesCircle,
-  FaLock,
-  FaGavel,
-  FaProjectDiagram,
-  FaMicrochip,
-} from "react-icons/fa";
+import { FaLock, FaGavel, FaProjectDiagram, FaMicrochip } from "react-icons/fa";
 import { Line } from "react-chartjs-2";
 import Chart from "chart.js/auto";
 import { ForceGraph2D } from "react-force-graph";
@@ -38,11 +30,21 @@ export default function Dashboard() {
   // Simulated AML Data (Replace with API Call Later)
   useEffect(() => {
     const sampleData = [
-      { wallet: "0x123", amount: 50000, risk: 90 },
-      { wallet: "0x456", amount: 20000, risk: 40 },
-      { wallet: "0x789", amount: 75000, risk: 95 },
-      { wallet: "0xABC", amount: 12000, risk: 20 },
-      { wallet: "0xDEF", amount: 45000, risk: 85 },
+      { wallet: "0xA1B2C3D4", amount: 45000, risk: 85 },
+      { wallet: "0xE5F6G7H8", amount: 30000, risk: 60 },
+      { wallet: "0xI9J0K1L2", amount: 100000, risk: 99 },
+      { wallet: "0xM3N4O5P6", amount: 15000, risk: 35 },
+      { wallet: "0xQ7R8S9T0", amount: 80000, risk: 88 },
+      { wallet: "0xU1V2W3X4", amount: 25000, risk: 50 },
+      { wallet: "0xY5Z6A7B8", amount: 60000, risk: 70 },
+      { wallet: "0xC9D0E1F2", amount: 40000, risk: 45 },
+      { wallet: "0xG3H4I5J6", amount: 90000, risk: 92 },
+      { wallet: "0xK7L8M9N0", amount: 35000, risk: 55 },
+      { wallet: "0xO1P2Q3R4", amount: 70000, risk: 80 },
+      { wallet: "0xS5T6U7V8", amount: 50000, risk: 90 },
+      { wallet: "0xW9X0Y1Z2", amount: 20000, risk: 40 },
+      { wallet: "0xA3B4C5D6", amount: 75000, risk: 95 },
+      { wallet: "0xE7F8G9H0", amount: 12000, risk: 20 },
     ];
     setAmlData(sampleData);
   }, []);
@@ -156,45 +158,116 @@ export default function Dashboard() {
             Create Contract
           </button>
         </div>
-
-        {/* Grid Layout */}
-
-        {/* Compliance Analysis */}
+        {/* Regulatory Updates Section */}
         <div className="mt-6 p-6 bg-white rounded-lg shadow-md">
-          <h2 className="text-xl font-semibold mb-4">📜 Compliance Analysis</h2>
-          <table className="w-full border-collapse border border-gray-300">
-            <thead className="bg-gray-100">
-              <tr>
-                <th className="border p-3">Rule</th>
-                <th className="border p-3">Status</th>
-                <th className="border p-3">Risk</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr className="border">
-                <td className="p-3">FATF Travel Rule</td>
-                <td className="p-3 text-center">
-                  {riskScore > 50 ? (
-                    <FaExclamationTriangle className="text-orange-500 mx-auto" />
-                  ) : (
-                    <FaCheckCircle className="text-green-500 mx-auto" />
-                  )}
-                </td>
-                <td className="p-3">{riskScore > 50 ? "Medium" : "Low"}</td>
-              </tr>
-              <tr className="border">
-                <td className="p-3">KYC Verification</td>
-                <td className="p-3 text-center">
-                  {riskScore > 70 ? (
-                    <FaTimesCircle className="text-red-500 mx-auto" />
-                  ) : (
-                    <FaCheckCircle className="text-green-500 mx-auto" />
-                  )}
-                </td>
-                <td className="p-3">{riskScore > 70 ? "High" : "Compliant"}</td>
-              </tr>
-            </tbody>
-          </table>
+          <h2 className="text-xl font-semibold flex items-center mb-4">
+            <FaGavel className="text-purple-500 mr-3 text-2xl" /> Regulatory
+            Updates
+          </h2>
+          <div className="bg-gray-100 p-4 rounded-lg shadow-inner">
+            <table className="w-full border border-gray-300 rounded-lg">
+              <thead className="bg-gray-200">
+                <tr>
+                  <th className="border p-3 text-left">Regulation</th>
+                  <th className="border p-3 text-left">Effective Date</th>
+                  <th className="border p-3 text-left">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {regulatoryUpdates.map((update, index) => (
+                  <tr key={index} className="border text-left">
+                    <td className="p-3 font-medium">{update.regulation}</td>
+                    <td className="p-3">{update.effectiveDate}</td>
+                    <td className="p-3">
+                      <span
+                        className={`px-3 py-1 text-white text-sm font-semibold rounded-lg ${
+                          update.status === "Compliant"
+                            ? "bg-green-500"
+                            : update.status === "Pending Compliance"
+                            ? "bg-yellow-500"
+                            : "bg-red-500"
+                        }`}
+                      >
+                        {update.status === "Compliant"
+                          ? "✅ Compliant"
+                          : update.status === "Pending Compliance"
+                          ? "⏳ Pending"
+                          : "⚠️ Action Required"}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* Zero-Knowledge Proof (ZKP) Compliance Section */}
+        <div className="mt-6 p-6 bg-white rounded-lg shadow-md">
+          <h2 className="text-xl font-semibold flex items-center mb-4">
+            <FaLock className="text-blue-500 mr-3 text-2xl" /> Zero-Knowledge
+            Proof (ZKP) Compliance
+          </h2>
+          <div className="bg-gray-100 p-4 rounded-lg shadow-inner">
+            <table className="w-full border border-gray-300 rounded-lg">
+              <thead className="bg-gray-200">
+                <tr>
+                  <th className="border p-3 text-left">Wallet Address</th>
+                  <th className="border p-3 text-left">Verification Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {zkpVerifiedUsers.map((user, index) => (
+                  <tr
+                    key={index}
+                    className={`border text-left ${
+                      user.verified ? "bg-green-100" : "bg-red-100"
+                    }`}
+                  >
+                    <td className="p-3 font-mono">{user.wallet}</td>
+                    <td className="p-3">
+                      <span
+                        className={`px-3 py-1 text-white text-sm font-semibold rounded-lg ${
+                          user.verified ? "bg-green-500" : "bg-red-500"
+                        }`}
+                      >
+                        {user.verified ? "✅ Verified" : "❌ Not Verified"}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* Graph-Based Risk Analysis */}
+        <div className="mt-6 p-6 bg-white rounded-lg shadow-md">
+          <h2 className="text-xl font-semibold flex items-center mb-4">
+            <FaProjectDiagram className="text-blue-500 mr-3 text-2xl" /> Money
+            Laundering Risk Network
+          </h2>
+          <div className="relative bg-gray-100 rounded-lg p-4 shadow-inner">
+            <p className="text-sm text-gray-600 mb-3">
+              🔴 High-Risk Nodes | 🟢 Low-Risk Nodes
+            </p>
+            <ForceGraph2D
+              graphData={graphData}
+              nodeAutoColorBy="risk"
+              nodeCanvasObject={(node, ctx) => {
+                ctx.fillStyle = node.risk > 70 ? "red" : "green";
+                ctx.beginPath();
+                ctx.arc(node.x, node.y, 10, 0, 2 * Math.PI, false);
+                ctx.fill();
+                ctx.font = "12px Arial";
+                ctx.fillStyle = "black";
+                ctx.fillText(node.id, node.x + 10, node.y + 5);
+              }}
+              linkDirectionalParticles={2}
+              linkDirectionalParticleSpeed={0.01}
+              height={350}
+            />
+          </div>
         </div>
 
         {/* AML Risk Visualization */}
@@ -242,152 +315,6 @@ export default function Dashboard() {
               ))}
             </tbody>
           </table>
-        </div>
-
-        {/* Zero-Knowledge Proof (ZKP) Compliance Section */}
-        <div className="mt-6 p-6 bg-white rounded-lg shadow-md">
-          <h2 className="text-xl font-semibold flex items-center mb-4">
-            <FaLock className="text-blue-500 mr-3 text-2xl" /> Zero-Knowledge
-            Proof (ZKP) Compliance
-          </h2>
-          <div className="bg-gray-100 p-4 rounded-lg shadow-inner">
-            <table className="w-full border border-gray-300 rounded-lg">
-              <thead className="bg-gray-200">
-                <tr>
-                  <th className="border p-3 text-left">Wallet Address</th>
-                  <th className="border p-3 text-left">Verification Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {zkpVerifiedUsers.map((user, index) => (
-                  <tr
-                    key={index}
-                    className={`border text-left ${
-                      user.verified ? "bg-green-100" : "bg-red-100"
-                    }`}
-                  >
-                    <td className="p-3 font-mono">{user.wallet}</td>
-                    <td className="p-3">
-                      <span
-                        className={`px-3 py-1 text-white text-sm font-semibold rounded-lg ${
-                          user.verified ? "bg-green-500" : "bg-red-500"
-                        }`}
-                      >
-                        {user.verified ? "✅ Verified" : "❌ Not Verified"}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        {/* Regulatory Updates Section */}
-        <div className="mt-6 p-6 bg-white rounded-lg shadow-md">
-          <h2 className="text-xl font-semibold flex items-center mb-4">
-            <FaGavel className="text-purple-500 mr-3 text-2xl" /> Regulatory
-            Updates
-          </h2>
-          <div className="bg-gray-100 p-4 rounded-lg shadow-inner">
-            <table className="w-full border border-gray-300 rounded-lg">
-              <thead className="bg-gray-200">
-                <tr>
-                  <th className="border p-3 text-left">Regulation</th>
-                  <th className="border p-3 text-left">Effective Date</th>
-                  <th className="border p-3 text-left">Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {regulatoryUpdates.map((update, index) => (
-                  <tr key={index} className="border text-left">
-                    <td className="p-3 font-medium">{update.regulation}</td>
-                    <td className="p-3">{update.effectiveDate}</td>
-                    <td className="p-3">
-                      <span
-                        className={`px-3 py-1 text-white text-sm font-semibold rounded-lg ${
-                          update.status === "Compliant"
-                            ? "bg-green-500"
-                            : update.status === "Pending Compliance"
-                            ? "bg-yellow-500"
-                            : "bg-red-500"
-                        }`}
-                      >
-                        {update.status === "Compliant"
-                          ? "✅ Compliant"
-                          : update.status === "Pending Compliance"
-                          ? "⏳ Pending"
-                          : "⚠️ Action Required"}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        {/* Graph-Based Risk Analysis */}
-        <div className="mt-6 p-6 bg-white rounded-lg shadow-md">
-          <h2 className="text-xl font-semibold flex items-center mb-4">
-            <FaProjectDiagram className="text-blue-500 mr-3 text-2xl" /> Money
-            Laundering Risk Network
-          </h2>
-          <div className="relative bg-gray-100 rounded-lg p-4 shadow-inner">
-            <p className="text-sm text-gray-600 mb-3">
-              🔴 High-Risk Nodes | 🟢 Low-Risk Nodes
-            </p>
-            <ForceGraph2D
-              graphData={graphData}
-              nodeAutoColorBy="risk"
-              nodeCanvasObject={(node, ctx) => {
-                ctx.fillStyle = node.risk > 70 ? "red" : "green";
-                ctx.beginPath();
-                ctx.arc(node.x, node.y, 10, 0, 2 * Math.PI, false);
-                ctx.fill();
-                ctx.font = "12px Arial";
-                ctx.fillStyle = "black";
-                ctx.fillText(node.id, node.x + 10, node.y + 5);
-              }}
-              linkDirectionalParticles={2}
-              linkDirectionalParticleSpeed={0.01}
-              height={350}
-            />
-          </div>
-        </div>
-
-        {/* Smart Contract Health Section */}
-        <div className="mt-6 p-6 bg-gray-50 rounded-lg shadow-md">
-          <h2 className="text-xl font-semibold flex items-center mb-4">
-            <FaMicrochip className="text-green-500 mr-3 text-2xl" /> Smart
-            Contract Health
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="p-4 bg-white rounded-lg shadow border-l-4 border-blue-500">
-              <h3 className="text-md font-semibold text-blue-600">
-                ⚡ Gas Usage
-              </h3>
-              <p className="text-lg font-bold mt-1">
-                {smartContractHealth.gasUsage} units
-              </p>
-            </div>
-            <div className="p-4 bg-white rounded-lg shadow border-l-4 border-green-500">
-              <h3 className="text-md font-semibold text-green-600">
-                🔒 Security Score
-              </h3>
-              <p className="text-lg font-bold mt-1">
-                {smartContractHealth.securityScore}/100
-              </p>
-            </div>
-            <div className="p-4 bg-white rounded-lg shadow border-l-4 border-orange-500">
-              <h3 className="text-md font-semibold text-orange-600">
-                📊 Complexity Level
-              </h3>
-              <p className="text-lg font-bold mt-1">
-                {smartContractHealth.complexity}/5
-              </p>
-            </div>
-          </div>
         </div>
       </div>
     </div>
