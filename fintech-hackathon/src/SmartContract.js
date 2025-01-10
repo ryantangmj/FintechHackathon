@@ -4,9 +4,6 @@ import {
   FaCheckCircle,
   FaExclamationTriangle,
   FaTimesCircle,
-  FaLock,
-  FaGavel,
-  FaProjectDiagram,
   FaMicrochip,
 } from "react-icons/fa";
 
@@ -15,9 +12,7 @@ const BASE_URL = "http://localhost:8000";
 function SmartContract() {
   const navigate = useNavigate();
 
-  const [transactionType, setTransactionType] = useState(
-    "Select Transaction Type"
-  );
+  const [transactionType, setTransactionType] = useState("Select Transaction Type");
   const [assetType, setAssetType] = useState("Select Asset Type");
   const [transactionValue, setTransactionValue] = useState(0);
   const [settlementDate, setSettlementDate] = useState(
@@ -26,7 +21,6 @@ function SmartContract() {
   const [counterparty, setCounterparty] = useState("");
   const [jurisdiction, setJurisdiction] = useState("Select Jurisdiction");
   const [contractStatus, setContractStatus] = useState("Pending");
-  const [inputValue, setInputValue] = useState("");
   const [loading, setLoading] = useState(false);
   const [contractCode, setContractCode] = useState("");
   const [riskScore, setRiskScore] = useState(0);
@@ -72,10 +66,38 @@ function SmartContract() {
     "Canada(IIROC)",
   ];
 
-  const handleInputChange = (e) => {
-    setInputValue(e.target.value);
-    e.target.style.height = "auto";
-    e.target.style.height = e.target.scrollHeight + "px";
+  const generateTemplate = async () => {
+    setLoading(true);
+    try {
+      const details = {
+        transactionType: transactionType.toLowerCase().replace(/\s+/g, "_"),
+        assetType: assetType.toLowerCase().replace(/\s+/g, "_"),
+        value: parseFloat(transactionValue),
+        settlementDate: settlementDate,
+        counterpartyId: counterparty,
+        jurisdiction: jurisdiction.split("(")[0].trim(),
+      };
+
+      const response = await fetch(`${BASE_URL}/api/generate-template`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(details),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Template generation failed: ${response.status}`);
+      }
+
+      const data = await response.json();
+      setContractCode(data.contractCode);
+    } catch (error) {
+      console.error("Error generating template:", error);
+      // You might want to show an error message to the user here
+    } finally {
+      setLoading(false);
+    }
   };
 
   const analyzeContract = async () => {
@@ -91,31 +113,7 @@ function SmartContract() {
       jurisdiction: jurisdiction.split("(")[0].trim(),
     };
 
-    console.log("Request payload for template generation:", details);
-
     try {
-      const templateResponse = await fetch(
-        `${BASE_URL}/api/generate-template`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(details),
-        }
-      );
-
-      if (!templateResponse.ok) {
-        throw new Error(
-          `Template generation failed: ${templateResponse.status} (${templateResponse.statusText})`
-        );
-      }
-
-      const templateData = await templateResponse.json();
-
-      const contractCode = templateData.contractCode;
-
-      console.log("\nTesting contract audit...");
       const auditData = {
         contractCode: contractCode,
         config: details,
@@ -139,14 +137,12 @@ function SmartContract() {
 
       setRiskScore(auditResult.summary.overallHealth);
       setContractStatus(auditResult.summary.riskLevel);
-      const randomGasUsage = Math.floor(Math.random() * 100);
-      const randomSecurityScore = Math.floor(Math.random() * 100);
-      const randomComplexity = Math.floor(Math.random() * 100);
-
+      
+      // Set smart contract health metrics
       setSmartContractHealth({
-        gasUsage: randomGasUsage,
-        securityScore: randomSecurityScore,
-        complexity: randomComplexity,
+        gasUsage: Math.floor(Math.random() * 100),
+        securityScore: Math.floor(Math.random() * 100),
+        complexity: Math.floor(Math.random() * 100),
       });
     } catch (error) {
       console.error("Error:", error);
@@ -236,18 +232,34 @@ function SmartContract() {
                 ))}
               </select>
 
+              <button
+                className="w-full bg-green-600 text-white p-3 rounded-lg font-semibold hover:bg-green-700 transition duration-200 mb-4"
+                onClick={generateTemplate}
+                disabled={loading || 
+                  transactionType === "Select Transaction Type" ||
+                  assetType === "Select Asset Type" ||
+                  jurisdiction === "Select Jurisdiction" ||
+                  !counterparty ||
+                  !transactionValue}
+              >
+                {loading ? "Generating..." : "Generate Smart Contract Template"}
+              </button>
+
               <div className="border rounded-lg">
                 <textarea
                   className="w-full h-96 p-4 font-mono text-sm focus:outline-none bg-gray-900 text-gray-100"
+                  value={contractCode}
                   onChange={(e) => setContractCode(e.target.value)}
+                  placeholder="Generated smart contract code will appear here..."
+                  readOnly
                 />
               </div>
               <button
-                className="w-full bg-blue-600 text-white p-3 rounded-lg font-semibold hover:bg-blue-700 transition duration-200"
+                className="w-full bg-blue-600 text-white p-3 rounded-lg font-semibold hover:bg-blue-700 transition duration-200 mt-4"
                 onClick={analyzeContract}
-                disabled={loading}
+                disabled={loading || !contractCode}
               >
-                {loading ? "Analyzing..." : "Analyze Compliance"}
+                {loading ? "Analyzing..." : "Analyze Smart Contract Compliance"}
               </button>
             </div>
 
@@ -345,7 +357,7 @@ function SmartContract() {
                       📊 Complexity Level
                     </h3>
                     <p className="text-lg font-bold mt-1">
-                      {smartContractHealth.complexity}/5
+                      {smartContractHealth.complexity}/100
                     </p>
                   </div>
                 </div>
