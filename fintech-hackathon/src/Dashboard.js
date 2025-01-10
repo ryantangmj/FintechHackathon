@@ -106,17 +106,40 @@ export default function Dashboard() {
   useEffect(() => {
     const sampleGraph = {
       nodes: [
-        { id: "0x123", risk: 90 },
-        { id: "0x456", risk: 40 },
-        { id: "0x789", risk: 95 },
-        { id: "0xABC", risk: 20 },
-        { id: "0xDEF", risk: 85 },
+        { id: "0xA1B2C3D4E5F6G7H8I9J0", risk: 90 }, // High-risk source
+        { id: "0xK1L2M3N4O5P6Q7R8S9T0", risk: 40 },
+        { id: "0xU1V2W3X4Y5Z6A7B8C9D0", risk: 95 }, // High-risk hub
+        { id: "0xE1F2G3H4I5J6K7L8M9N0", risk: 20 },
+        { id: "0xO1P2Q3R4S5T6U7V8W9X0", risk: 85 }, // High-risk intermediary
+        { id: "0xY1Z2A3B4C5D6E7F8G9H0", risk: 75 }, // High-risk node
+        { id: "0xI1J2K3L4M5N6O7P8Q9R0", risk: 30 }, // Low-risk node
+        { id: "0xS1T2U3V4W5X6Y7Z8A9B0", risk: 88 }, // High-risk node
+        { id: "0xC1D2E3F4G5H6I7J8K9L0", risk: 25 }, // Low-risk node
+        { id: "0xM1N2O3P4Q5R6S7T8U9V0", risk: 92 }, // High-risk node
+        { id: "0xW1X2Y3Z4A5B6C7D8E9F0", risk: 35 }, // Low-risk node
+        { id: "0xG1H2I3J4K5L6M7N8O9P0", risk: 82 }, // High-risk node
+        { id: "0xQ1R2S3T4U5V6W7X8Y9Z0", risk: 45 }, // Medium-risk node
+        { id: "0xA2B3C4D5E6F7G8H9I0J1", risk: 78 }, // High-risk node
+        { id: "0xK2L3M4N5O6P7Q8R9S0T1", risk: 15 }, // Low-risk node
       ],
       links: [
-        { source: "0x123", target: "0x456" },
-        { source: "0x123", target: "0x789" },
-        { source: "0x456", target: "0xABC" },
-        { source: "0xDEF", target: "0x789" },
+        // Original connections
+        { source: "0xA1B2C3D4E5F6G7H8I9J0", target: "0xK1L2M3N4O5P6Q7R8S9T0" },
+        { source: "0xA1B2C3D4E5F6G7H8I9J0", target: "0xU1V2W3X4Y5Z6A7B8C9D0" },
+        { source: "0xK1L2M3N4O5P6Q7R8S9T0", target: "0xE1F2G3H4I5J6K7L8M9N0" },
+        { source: "0xO1P2Q3R4S5T6U7V8W9X0", target: "0xU1V2W3X4Y5Z6A7B8C9D0" },
+        // New connections showing potential money laundering patterns
+        { source: "0xU1V2W3X4Y5Z6A7B8C9D0", target: "0xY1Z2A3B4C5D6E7F8G9H0" }, // High-risk to high-risk
+        { source: "0xY1Z2A3B4C5D6E7F8G9H0", target: "0xI1J2K3L4M5N6O7P8Q9R0" }, // High-risk to low-risk (potential layering)
+        { source: "0xS1T2U3V4W5X6Y7Z8A9B0", target: "0xC1D2E3F4G5H6I7J8K9L0" }, // High-risk to low-risk
+        { source: "0xS1T2U3V4W5X6Y7Z8A9B0", target: "0xM1N2O3P4Q5R6S7T8U9V0" }, // High-risk to high-risk
+        { source: "0xM1N2O3P4Q5R6S7T8U9V0", target: "0xW1X2Y3Z4A5B6C7D8E9F0" }, // High-risk to low-risk
+        { source: "0xG1H2I3J4K5L6M7N8O9P0", target: "0xQ1R2S3T4U5V6W7X8Y9Z0" }, // High-risk to medium-risk
+        { source: "0xQ1R2S3T4U5V6W7X8Y9Z0", target: "0xA2B3C4D5E6F7G8H9I0J1" }, // Medium-risk to high-risk
+        { source: "0xA2B3C4D5E6F7G8H9I0J1", target: "0xK2L3M4N5O6P7Q8R9S0T1" }, // High-risk to low-risk
+        { source: "0xU1V2W3X4Y5Z6A7B8C9D0", target: "0xS1T2U3V4W5X6Y7Z8A9B0" }, // Connection between high-risk nodes
+        { source: "0xO1P2Q3R4S5T6U7V8W9X0", target: "0xG1H2I3J4K5L6M7N8O9P0" }, // High-risk to high-risk
+        { source: "0xK1L2M3N4O5P6Q7R8S9T0", target: "0xQ1R2S3T4U5V6W7X8Y9Z0" }, // Low-risk to medium-risk
       ],
     };
     setGraphData(sampleGraph);
@@ -252,21 +275,35 @@ export default function Dashboard() {
               🔴 High-Risk Nodes | 🟢 Low-Risk Nodes
             </p>
             <ForceGraph2D
-              graphData={graphData}
-              nodeAutoColorBy="risk"
-              nodeCanvasObject={(node, ctx) => {
-                ctx.fillStyle = node.risk > 70 ? "red" : "green";
-                ctx.beginPath();
-                ctx.arc(node.x, node.y, 10, 0, 2 * Math.PI, false);
-                ctx.fill();
-                ctx.font = "12px Arial";
-                ctx.fillStyle = "black";
-                ctx.fillText(node.id, node.x + 10, node.y + 5);
-              }}
-              linkDirectionalParticles={2}
-              linkDirectionalParticleSpeed={0.01}
-              height={350}
-            />
+            graphData={graphData}
+            nodeAutoColorBy="risk"
+            nodeCanvasObject={(node, ctx) => {
+              const getNodeColor = (risk) => {
+                if (risk > 70) return "red";
+                if (risk > 40) return "yellow";
+                return "green";
+              };
+              ctx.fillStyle = getNodeColor(node.risk);
+              ctx.beginPath();
+              ctx.arc(node.x, node.y, 10, 0, 2 * Math.PI, false);
+              ctx.fill();
+              ctx.font = "10px Arial";
+              ctx.fillStyle = "black";
+              const shortId = `${node.id.substring(0, 6)}...`;
+              ctx.fillText(shortId, node.x + 12, node.y + 4);
+            }}
+            linkDirectionalParticles={2}
+            linkDirectionalParticleSpeed={0.01}
+            height={500}
+            d3VelocityDecay={0.1}
+            cooldownTicks={100}
+            linkDistance={200}
+            d3Force={(d3) => {
+              d3.force('charge').strength(-2000);
+              d3.force('collision').radius(50);
+              d3.force('center').strength(0.1);
+            }}
+          />
           </div>
         </div>
 
