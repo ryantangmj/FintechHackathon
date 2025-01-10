@@ -12,7 +12,9 @@ const BASE_URL = "http://localhost:8000";
 function SmartContract() {
   const navigate = useNavigate();
 
-  const [transactionType, setTransactionType] = useState("Select Transaction Type");
+  const [transactionType, setTransactionType] = useState(
+    "Select Transaction Type"
+  );
   const [assetType, setAssetType] = useState("Select Asset Type");
   const [transactionValue, setTransactionValue] = useState(0);
   const [settlementDate, setSettlementDate] = useState(
@@ -21,7 +23,8 @@ function SmartContract() {
   const [counterparty, setCounterparty] = useState("");
   const [jurisdiction, setJurisdiction] = useState("Select Jurisdiction");
   const [contractStatus, setContractStatus] = useState("Pending");
-  const [loading, setLoading] = useState(false);
+  const [loadingGeneration, setLoadingGeneration] = useState(false);
+  const [loadingCompliance, setLoadingCompliance] = useState(false);
   const [contractCode, setContractCode] = useState("");
   const [riskScore, setRiskScore] = useState(0);
   const [smartContractHealth, setSmartContractHealth] = useState({
@@ -67,7 +70,7 @@ function SmartContract() {
   ];
 
   const generateTemplate = async () => {
-    setLoading(true);
+    setLoadingGeneration(true);
     try {
       const details = {
         transactionType: transactionType.toLowerCase().replace(/\s+/g, "_"),
@@ -96,12 +99,12 @@ function SmartContract() {
       console.error("Error generating template:", error);
       // You might want to show an error message to the user here
     } finally {
-      setLoading(false);
+      setLoadingGeneration(false);
     }
   };
 
   const analyzeContract = async () => {
-    setLoading(true);
+    setLoadingCompliance(true);
     setRiskScore(0);
 
     const details = {
@@ -137,7 +140,7 @@ function SmartContract() {
 
       setRiskScore(auditResult.summary.overallHealth);
       setContractStatus(auditResult.summary.riskLevel);
-      
+
       // Set smart contract health metrics
       setSmartContractHealth({
         gasUsage: Math.floor(Math.random() * 100),
@@ -148,7 +151,7 @@ function SmartContract() {
       console.error("Error:", error);
       // Handle errors as needed
     } finally {
-      setLoading(false);
+      setLoadingCompliance(false);
     }
   };
 
@@ -235,14 +238,18 @@ function SmartContract() {
               <button
                 className="w-full bg-green-600 text-white p-3 rounded-lg font-semibold hover:bg-green-700 transition duration-200 mb-4"
                 onClick={generateTemplate}
-                disabled={loading || 
+                disabled={
+                  loadingGeneration ||
                   transactionType === "Select Transaction Type" ||
                   assetType === "Select Asset Type" ||
                   jurisdiction === "Select Jurisdiction" ||
                   !counterparty ||
-                  !transactionValue}
+                  !transactionValue
+                }
               >
-                {loading ? "Generating..." : "Generate Smart Contract Template"}
+                {loadingGeneration
+                  ? "Generating..."
+                  : "Generate Smart Contract Template"}
               </button>
 
               <div className="border rounded-lg">
@@ -257,9 +264,11 @@ function SmartContract() {
               <button
                 className="w-full bg-blue-600 text-white p-3 rounded-lg font-semibold hover:bg-blue-700 transition duration-200 mt-4"
                 onClick={analyzeContract}
-                disabled={loading || !contractCode}
+                disabled={loadingCompliance || !contractCode}
               >
-                {loading ? "Analyzing..." : "Analyze Smart Contract Compliance"}
+                {loadingCompliance
+                  ? "Analyzing..."
+                  : "Analyze Smart Contract Compliance"}
               </button>
             </div>
 
@@ -270,7 +279,7 @@ function SmartContract() {
                   💡 Compliance Status
                 </h2>
                 <div className="p-4 border border-gray-300 rounded">
-                  {loading ? (
+                  {loadingCompliance ? (
                     <div className="animate-spin h-6 w-6 border-t-2 border-blue-600 rounded-full mx-auto"></div>
                   ) : (
                     <span
