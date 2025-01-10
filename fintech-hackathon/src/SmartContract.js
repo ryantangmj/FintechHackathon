@@ -10,21 +10,26 @@ import {
   FaMicrochip,
 } from "react-icons/fa";
 
+const BASE_URL = "http://localhost:8000";
+
 function SmartContract() {
   const navigate = useNavigate();
+
   const [transactionType, setTransactionType] = useState(
     "Select Transaction Type"
   );
-  const [riskScore, setRiskScore] = useState(0);
   const [assetType, setAssetType] = useState("Select Asset Type");
   const [transactionValue, setTransactionValue] = useState(0);
-  const [settlementDate, setSettlementDate] = useState(new Date());
+  const [settlementDate, setSettlementDate] = useState(
+    new Date().toISOString().split("T")[0]
+  );
   const [counterparty, setCounterparty] = useState("");
   const [jurisdiction, setJurisdiction] = useState("Select Jurisdiction");
   const [contractStatus, setContractStatus] = useState("Pending");
   const [inputValue, setInputValue] = useState("");
   const [loading, setLoading] = useState(false);
   const [contractCode, setContractCode] = useState("");
+  const [riskScore, setRiskScore] = useState(0);
   const [smartContractHealth, setSmartContractHealth] = useState({
     gasUsage: 0,
     securityScore: 0,
@@ -75,12 +80,80 @@ function SmartContract() {
 
   const analyzeContract = async () => {
     setLoading(true);
-    setTimeout(() => {
-      const randomScore = Math.floor(Math.random() * 100);
-      setRiskScore(randomScore);
-      setContractStatus(randomScore > 70 ? "High Risk" : "Compliant");
+    setRiskScore(0);
+
+    const details = {
+      transactionType: transactionType.toLowerCase().replace(/\s+/g, "_"),
+      assetType: assetType.toLowerCase().replace(/\s+/g, "_"),
+      value: parseFloat(transactionValue),
+      settlementDate: settlementDate,
+      counterpartyId: counterparty,
+      jurisdiction: jurisdiction.split("(")[0].trim(),
+    };
+
+    console.log("Request payload for template generation:", details);
+
+    try {
+      const templateResponse = await fetch(
+        `${BASE_URL}/api/generate-template`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(details),
+        }
+      );
+
+      if (!templateResponse.ok) {
+        throw new Error(
+          `Template generation failed: ${templateResponse.status} (${templateResponse.statusText})`
+        );
+      }
+
+      const templateData = await templateResponse.json();
+
+      const contractCode = templateData.contractCode;
+
+      console.log("\nTesting contract audit...");
+      const auditData = {
+        contractCode: contractCode,
+        config: details,
+      };
+
+      const auditResponse = await fetch(`${BASE_URL}/api/audit-contract`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(auditData),
+      });
+
+      if (!auditResponse.ok) {
+        throw new Error(
+          `Audit failed: ${auditResponse.status} (${auditResponse.statusText})`
+        );
+      }
+
+      const auditResult = await auditResponse.json();
+
+      setRiskScore(auditResult.summary.overallHealth);
+      setContractStatus(auditResult.summary.riskLevel);
+      const randomGasUsage = Math.floor(Math.random() * 100);
+      const randomSecurityScore = Math.floor(Math.random() * 100);
+      const randomComplexity = Math.floor(Math.random() * 100);
+
+      setSmartContractHealth({
+        gasUsage: randomGasUsage,
+        securityScore: randomSecurityScore,
+        complexity: randomComplexity,
+      });
+    } catch (error) {
+      console.error("Error:", error);
+      // Handle errors as needed
+    } finally {
       setLoading(false);
-    }, 2000);
+    }
   };
 
   return (

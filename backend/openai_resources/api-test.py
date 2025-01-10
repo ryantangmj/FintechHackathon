@@ -53,8 +53,8 @@ def test_api():
             if audit_response.status_code == 200:
                 audit_result = audit_response.json()
                 print("\n✅ Audit completed successfully")
-                print(f"Overall Health: {audit_result['summary']['overallHealth']}")
-                print(f"Risk Level: {audit_result['summary']['riskLevel']}")
+                print(f"Overall Health: {audit_result.summary.overallHealth}")
+                print(f"Risk Level: {audit_result.summary.riskLevel}")
                 print(f"Main Findings: {audit_result['summary']['mainFindings']}")
             else:
                 print(f"\n❌ Audit failed: {audit_response.status_code}")
